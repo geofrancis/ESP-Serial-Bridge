@@ -20,6 +20,8 @@
  * where system failure may affect user or environmental safety.
  *********************************************************************************/
 
+#include <WireGuard-ESP32.h>
+
 #include <Arduino.h>
 
 #ifdef ESP32
@@ -46,7 +48,17 @@ AsyncUDP udp;
 uint16_t udp_port[NUM_COM] = {SERIAL0_UDP_PORT, SERIAL1_UDP_PORT,
                               SERIAL2_UDP_PORT};
 #endif
+#include <WireGuard-ESP32.h>
 
+IPAddress local_ip(10, 0, 1, 3);                                      // IP address of the local interface
+const char private_key[] = "COrTA6sjSk70qEJ1m7Pp2PNUeRwe8gqJG13YVAv0P28=";   // Private key of the local interface
+const char endpoint_address[] = "xxxxxx.com";                           // Address of the endpoint peer
+const char public_key[] = "Al/RIyqRr3YfScMXc19f567567k3hRPo6BJsgSGyA=";    // Public key of the endpoint peer
+const char preshared_key[] = "RCcy9PT/5zq5675675675679gHv1piPmKW5CvpVo="; // Pre-Shared Key
+uint16_t endpoint_port = 51820;                                              // Port of the endpoint peer
+
+// WireGuard class instance
+static WireGuard wg;
 #ifdef BLUETOOTH  // inside the ESP32 condition, since ESP8266 doesn't have BT
 #include <BluetoothSerial.h>
 BluetoothSerial SerialBT;
@@ -93,6 +105,8 @@ uint16_t iBT = 0;
 #if defined(ESP32)
 void WiFiStationDisconnected(WiFiEvent_t event, WiFiEventInfo_t info) {
 #endif
+
+
 #if defined(ESP8266)
     WiFiEventHandler stationDisconnectedHandler;
     void WiFiStationDisconnected(
@@ -169,6 +183,7 @@ void WiFiStationDisconnected(WiFiEvent_t event, WiFiEventInfo_t info) {
             MDNS.addService("_telnet", "_tcp", SERIAL0_TCP_PORT);
         }
 #endif
+
 
 #ifdef OTA_HANDLER
         ArduinoOTA.onStart([]() {
@@ -247,9 +262,36 @@ void WiFiStationDisconnected(WiFiEvent_t event, WiFiEventInfo_t info) {
     WiFi.setOutputPower(15);
 #endif
 #endif
-    }
+
+ // Waiting until we connect to WiFi
+  while (!WiFi.isConnected()) {
+    delay(1000);
+    Serial.println("Connecting to WiFi...");
+  }
+  
+  // Print the IP address in the local network
+  Serial.print("Local IP: ");
+  Serial.println(WiFi.localIP());
+  
+  // Print the IP address in the WireGuard network
+  Serial.print("WireGuard IP: ");
+  Serial.println(local_ip.toString());
+
+  // Synchronize system time via NTP
+  configTime(9 * 60 * 60, 0, "time.google.com", "ntp.nict.jp", "ntp.jst.mfeed.ad.jp");
+
+  // Starting the WireGuard interface
+  Serial.println("Initializing WG interface...");
+  if (wg.begin(local_ip, private_key, endpoint_address, public_key, endpoint_port, preshared_key)) {
+    Serial.println("OK");
+  } else {
+    Serial.println("FAIL");
+  }
+}
+    
 
     void loop() {
+      
 #ifdef OTA_HANDLER
         ArduinoOTA.handle();
 #endif
@@ -339,4 +381,5 @@ void WiFiStationDisconnected(WiFiEvent_t event, WiFiEventInfo_t info) {
                 }
             }
         }
+   
     }
