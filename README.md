@@ -1,12 +1,11 @@
-This is a ESP32 bridge that has a Wireguard VPN client built into it so it can be used with mobile connections that cannot forward ports. 
+This is a fork of Yuris fork of ESP-Serial-bridge with a Wireguard VPN client built into it so it can be used with mobile connections that cannot forward ports. 
 
 
 
 # Yuri's Notes
 
 This fork is compatible with both the ESP32 
-As is, the sketch will compile, build, and upload without errors for the ESP32.  Edit `config.h` to configure and build for ESP8266.
-
+As is, the sketch will compile, build, and upload without errors for the ESP32.  
 There are many configurable parameters in `config.h`. Edit to suit your needs - inline comments should provide clarity.
 
 ## Major update, Apr 2023:
