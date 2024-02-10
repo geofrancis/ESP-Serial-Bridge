@@ -1,3 +1,7 @@
+This is a ESP32 bridge that has a Wireguard VPN client built into it so it can be used with mobile connections that cannot forward ports. 
+
+
+
 # Yuri's Notes
 
 This fork is compatible with both the ESP32 and ESP8266.
