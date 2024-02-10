@@ -4,10 +4,7 @@ This is a ESP32 bridge that has a Wireguard VPN client built into it so it can b
 
 # Yuri's Notes
 
-This fork is compatible with both the ESP32 and ESP8266.
-
-Because the ESP8266 has some idiosyncrasies with its hardware serial ports, I used SoftwareSerial to implement the ESP8266 bridge.  It is limited to ~115200 baud and will likely prove less reliable than an ESP32. `BLUETOOTH` (hardware limitation) and `PROTOCOL_UDP` (software limitation) are not available on the ESP8266.
-
+This fork is compatible with both the ESP32 
 As is, the sketch will compile, build, and upload without errors for the ESP32.  Edit `config.h` to configure and build for ESP8266.
 
 There are many configurable parameters in `config.h`. Edit to suit your needs - inline comments should provide clarity.
